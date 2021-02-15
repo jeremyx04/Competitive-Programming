@@ -1,53 +1,52 @@
 #include<bits/stdc++.h>
 using namespace std;
-#define dlwlrma ios::sync_with_stdio(0); cin.tie(0);
-#define pii pair<int,int>
-#define f first
-#define s second
-struct Path{
-    int x,y,d;
-    bool operator < (const Path &p) const{
-        return p.d>d;
+#define ll long long
+#define all(x) x.begin(),x.end()
+#define INF (0x3f3f3f3f)
+#define ms(a,b) memset(a,b,sizeof(a));
+
+const int mxN = 2002;
+int N,dist[mxN],dp1[mxN],dp2[mxN];
+pair<int,int>miku[mxN];
+struct path{
+    int a,b,w;
+    bool operator < (const path &p) const{
+        return w<p.w;
     }
 };
-const int mxN = 2002;
-const pii origin = {0,0};
-int n,dp[mxN],dist1[mxN],dist2[mxN];
-pii chu[mxN];
-vector<Path>foxpath;
-int dist(pii a, pii b){
-    int x1=a.f,x2=b.f,y1=a.s,y2=b.s;
-    return pow(x2-x1,2)+pow(y2-y1,2);
+int get_dist(pair<int,int>x, pair<int,int>y){
+    return (x.first-y.first)*(x.first-y.first)+(x.second-y.second)*(x.second-y.second);
 }
 int main(){
-    dlwlrma
-    cin >> n;
-    for(int i = 0; i < n; i++)
-        cin >> chu[i].f >> chu[i].s;
-    for(int i = 0; i < n; i++)
-        foxpath.push_back({n,i,dist(chu[i],origin)});
-    for(int i = 0; i < n; i++){
-        for(int j = i+1; j < n; j++)
-            foxpath.push_back({i,j,dist(chu[i],chu[j])});
+    ios::sync_with_stdio(0); cin.tie(0);
+    cin >> N;
+    for(int i = 0; i < N; i++)
+        cin >> miku[i].first >> miku[i].second;
+    vector<path>yotsuba;
+    for(int i = 0; i < N; i++){
+        yotsuba.push_back({N,i,get_dist(make_pair(0,0),miku[i])});
     }
-    sort(foxpath.begin(),foxpath.end());
-    for(auto &next : foxpath){
-        if(next.d > dist1[next.x]){
-            dist1[next.x] = next.d;
-            dist2[next.x] = dp[next.x];
+    for(int i = 0; i < N; i++){
+        for(int j = i+1; j < N; j++){
+            yotsuba.push_back({i,j,get_dist(miku[i],miku[j])});
         }
-        if(next.d > dist1[next.y]){
-            dist1[next.y] = next.d;
-            dist2[next.y] = dp[next.y];
+    }
+    sort(all(yotsuba));
+    for(auto &e:yotsuba){
+        if(e.w > dist[e.a]){
+            dist[e.a] = e.w;
+            dp2[e.a] = dp1[e.a];
         }
-        if(next.x==n)
-            dp[n] = max(dp[n],dist2[next.y]+1);
-        else if (next.y==n)
-            dp[n]=max(dp[n],dist2[next.x]+1);
+        if(e.w > dist[e.b]){
+            dist[e.b] = e.w;
+            dp2[e.b] = dp1[e.b];
+        }
+        if(e.a == N) 
+            dp1[N] = max(dp1[N],dp2[e.b]+1);
         else{
-            dp[next.x] = max(dp[next.x],dist2[next.y]+1);
-            dp[next.y] = max(dp[next.y],dist2[next.x]+1);
+            dp1[e.a] = max(dp1[e.a],dp2[e.b]+1);
+            dp1[e.b] = max(dp1[e.b],dp2[e.a]+1);
         }
     }
-    cout << dp[n] << "\n";
+    cout << dp1[N] << '\n';
 }
