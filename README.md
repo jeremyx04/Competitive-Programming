@@ -1,2 +1,2 @@
 # Competitive-Programming
-Solutions for contest problems for reference.
+some contest problem solutions
